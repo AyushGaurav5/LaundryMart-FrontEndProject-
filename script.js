@@ -1,3 +1,6 @@
+(function(){
+    emailjs.init("C6lT2RNRp1SiDJe14");
+})();
 let buttons = document.querySelectorAll(".btns button");
 let cart = document.getElementById("cartItems");
 let emptyMsg = document.getElementById("emptyMsg");
@@ -72,25 +75,39 @@ function updateSerial(){
 
 let form = document.querySelector("form");
 
-form.addEventListener("submit",function(evt){
+form.addEventListener("submit", function(evt){
     evt.preventDefault();
-    let booknow = document.querySelector(".book-now");
-    let oldMsg = document.querySelector(".ftr");
-    if(oldMsg){
-        oldMsg.remove();
-    }
-    let newDiv = document.createElement("div");
-    newDiv.innerHTML = `<ion-icon name="checkmark-circle-outline"></ion-icon> Email has been sent successfully`;
-    newDiv.classList.add("ftr");
-    booknow.appendChild(newDiv);
+
+    let name = document.getElementById("name").value;
+    let email = document.querySelector("input[type='email']").value;
+
+    let params = {
+        name: name,
+        email: email,
+        total: total
+    };
+
+    emailjs.send("service_u0pb4xt","template_wv2mlha",params)
+    .then(function(){
+        showMessage("Verification email sent successfully!");
+    })
+    .catch(function(){
+        showMessage("Failed to send email.");
+    });
+
     form.reset();
-    setTimeout(()=>{
-        newDiv.classList.add("show");
-    },10);
-    setTimeout(()=>{
-        newDiv.classList.add("hide");
-    },2000);
-    setTimeout(()=>{
-        newDiv.remove();
-    },2400);
 });
+
+function showMessage(msg){
+    let booknow = document.querySelector(".book-now");
+
+    let newDiv = document.createElement("div");
+    newDiv.innerHTML = `<ion-icon name="checkmark-circle-outline"></ion-icon> ${msg}`;
+    newDiv.classList.add("ftr");
+
+    booknow.appendChild(newDiv);
+
+    setTimeout(()=> newDiv.classList.add("show"),10);
+    setTimeout(()=> newDiv.classList.add("hide"),2000);
+    setTimeout(()=> newDiv.remove(),2400);
+}
